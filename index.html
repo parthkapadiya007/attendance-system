@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Attendance System</title>
+
+  <style>
+    body {
+      font-family: Arial;
+      background: linear-gradient(135deg, #4facfe, #00f2fe);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .card {
+      background: white;
+      padding: 30px;
+      width: 300px;
+      border-radius: 15px;
+      text-align: center;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    }
+
+    h2 {
+      margin-bottom: 20px;
+    }
+
+    select, button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 10px;
+      border-radius: 8px;
+      border: none;
+      font-size: 15px;
+    }
+
+    .in {
+      background: #28a745;
+      color: white;
+    }
+
+    .out {
+      background: #dc3545;
+      color: white;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="card">
+  <h2>Employee Attendance</h2>
+
+  <select id="name">
+    <option value="">Select Employee</option>
+    <option>AK</option>
+    <option>Dharmendra</option>
+    <option>Mohit</option>
+    <option>Neha</option>
+  </select>
+
+  <button class="in" onclick="saveData('IN')">IN</button>
+  <button class="out" onclick="saveData('OUT')">OUT</button>
+</div>
+
+<!-- Firebase Code -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
+  import { getDatabase, ref, push } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAf...",   // (tera same rahega)
+    authDomain: "office-attendance-28117.firebaseapp.com",
+    databaseURL: "https://office-attendance-28117-default-rtdb.firebaseio.com/",
+    projectId: "office-attendance-28117",
+    storageBucket: "office-attendance-28117.appspot.com",
+    messagingSenderId: "644671043096",
+    appId: "1:644671043096:web:3f53ef32720d4fd6ca756d"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+
+  window.saveData = function(action) {
+    const name = document.getElementById("name").value;
+
+    if (name === "") {
+      alert("Please select employee");
+      return;
+    }
+
+    push(ref(db, "attendance/"), {
+      name: name,
+      action: action,
+      time: new Date().toLocaleString()
+    });
+
+    alert(action + " recorded!");
+  }
+</script>
+
+</body>
+</html>
