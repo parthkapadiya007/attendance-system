@@ -66,40 +66,58 @@
 </div>
 
 <!-- Firebase Code -->
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
-  import { getDatabase, ref, push } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-database.js";
+  <script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
+import { getDatabase, ref, push } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-database.js";
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyAf...",   // (tera same rahega)
-    authDomain: "office-attendance-28117.firebaseapp.com",
-    databaseURL: "https://office-attendance-28117-default-rtdb.firebaseio.com/",
-    projectId: "office-attendance-28117",
-    storageBucket: "office-attendance-28117.appspot.com",
-    messagingSenderId: "644671043096",
-    appId: "1:644671043096:web:3f53ef32720d4fd6ca756d"
-  };
+const firebaseConfig = {
+  apiKey: "AIzaSyAf...",
+  authDomain: "office-attendance-28117.firebaseapp.com",
+  databaseURL: "https://office-attendance-28117-default-rtdb.firebaseio.com/",
+  projectId: "office-attendance-28117",
+  storageBucket: "office-attendance-28117.appspot.com",
+  messagingSenderId: "644671043096",
+  appId: "1:644671043096:web:3f53ef32720d4fd6ca756d"
+};
 
-  const app = initializeApp(firebaseConfig);
-  const db = getDatabase(app);
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
 
-  window.saveData = function(action) {
-    const name = document.getElementById("name").value;
+// 🔥 PUT YOUR OFFICE WIFI IP HERE
+const OFFICE_IP = "49.xxx.xxx.xxx";
 
-    if (name === "") {
-      alert("Please select employee");
-      return;
-    }
+window.saveData = async function(action) {
 
-    push(ref(db, "attendance/"), {
-      name: name,
-      action: action,
-      time: new Date().toLocaleString()
-    });
+  const name = document.getElementById("name").value;
 
-    alert(action + " recorded!");
+  if(name === ""){
+    alert("Select Employee");
+    return;
   }
-</script>
 
+  // Get User IP
+  const res = await fetch("https://api.ipify.org?format=json");
+  const data = await res.json();
+  const userIP = data.ip;
+
+  // 🔒 Office WiFi Check
+  if(userIP !== OFFICE_IP){
+    alert("Attendance allowed only in Office WiFi!");
+    return;
+  }
+
+  // Save Attendance
+  push(ref(db,"attendance/"),{
+    name:name,
+    action:action,
+    time:new Date().toLocaleString(),
+    ip:userIP,
+    device:navigator.userAgent
+  });
+
+  alert(action + " Recorded Successfully");
+}
+</script>
+  
 </body>
 </html>
